@@ -34,9 +34,21 @@ variable "container_image" {
   type        = string
 }
 
+variable "container_port" {
+  description = "port connecting to the container image"
+  type        = string
+  default     = 8080
+}
+
+variable "container_ready_path" {
+  description = "ready path of the container image"
+  type        = string
+  default     = "/ready"
+}
+
 variable "env_vars" {
   description = "environment variables to pass to the container"
-  type        = set(object({
+  type = set(object({
     name  = string,
     value = string,
   }))

@@ -1,70 +1,84 @@
-resource "google_cloud_run_service" "default" {
-  name     = var.service_name
-  location = var.region
+resource "google_cloud_run_v2_service" "default" {
+  name                = var.service_name
+  location            = var.region
 
-  metadata {
-    namespace   = var.project
-    annotations = {
-      "autoscaling.knative.dev/maxScale" = var.max_scale
-      "serving.knative.dev/creator"      = var.gcr_creator
-      "serving.knative.dev/lastModifier" = var.gcr_modifier
-      "run.googleapis.com/ingress"       = "all"
-    }
+  ingress = "INGRESS_TRAFFIC_ALL"
+
+  labels = {
+    env = var.environment
   }
 
   template {
-    spec {
-      containers {
-        image = var.container_image
+    annotations = {
+      "serving.knative.dev/creator"      = var.gcr_creator
+      "serving.knative.dev/lastModifier" = var.gcr_modifier
+    }
 
-        dynamic "env" {
-          for_each = var.env_vars
-          content {
-            name  = env.value.name
-            value = env.value.value
-          }
-        }
+    scaling {
+      max_instance_count = var.max_scale
+    }
 
-        resources {
-          limits = {
-            cpu    = var.cpu_limit
-            memory = var.mem_limit
-          }
+    containers {
+      image = var.container_image
+
+      dynamic "env" {
+        for_each = var.env_vars
+        content {
+          name  = env.value.name
+          value = env.value.value
         }
+      }
+
+      ports {
+        container_port = var.container_port
+      }
+
+      startup_probe {
+        initial_delay_seconds = 30
+        failure_threshold     = 2
+        period_seconds        = 10
+        timeout_seconds       = 1
+        http_get {
+          path = var.container_ready_path
+          port = var.container_port
+        }
+      }
+      resources {
+        limits = {
+          cpu    = var.cpu_limit
+          memory = var.mem_limit
+        }
+        cpu_idle = true
       }
     }
   }
-
-  traffic {
-    latest_revision = true
-    percent         = 100
-  }
 }
 
-data "google_iam_policy" "noauth" {
+data "google_iam_policy" "no_auth" {
   binding {
-    role    = "roles/run.invoker"
+    role = "roles/run.invoker"
     members = [
       "allUsers",
     ]
   }
 }
 
-resource "google_cloud_run_service_iam_policy" "noauth" {
-  location = google_cloud_run_service.default.location
-  service  = google_cloud_run_service.default.name
+resource "google_cloud_run_v2_service_iam_policy" "no_auth" {
+  project  = var.project
+  location = google_cloud_run_v2_service.default.location
+  name     = google_cloud_run_v2_service.default.name
 
-  policy_data = data.google_iam_policy.noauth.policy_data
+  policy_data = data.google_iam_policy.no_auth.policy_data
 }
 
 module "dns_record" {
   source      = "git::git@github.com:christian-m/gcp_cloud_dns_resource_record.git?ref=v1.1"
   environment = var.environment
   zone_name   = var.domain_zone_name
-  record      = {
-    name   = "${var.domain_name}.",
-    type   = "CNAME",
-    ttl    = "600",
+  record = {
+    name = "${var.domain_name}.",
+    type = "CNAME",
+    ttl  = "600",
     values = ["ghs.googlehosted.com."],
   }
 }
@@ -78,7 +92,7 @@ resource "google_cloud_run_domain_mapping" "default" {
   }
 
   spec {
-    route_name = google_cloud_run_service.default.name
+    route_name = google_cloud_run_v2_service.default.name
   }
 
   depends_on = [module.dns_record]
