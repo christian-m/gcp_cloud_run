@@ -36,7 +36,7 @@ variable "container_image" {
 
 variable "container_port" {
   description = "port connecting to the container image"
-  type        = string
+  type        = number
   default     = 8080
 }
 
@@ -57,8 +57,14 @@ variable "env_vars" {
 
 variable "max_scale" {
   description = "max scale of instances"
-  type        = string
-  default     = "100"
+  type        = number
+  default     = 100
+}
+
+variable "initial_delay" {
+  description = "initial delay for ready check of startup probe"
+  type        = number
+  default     = 15
 }
 
 variable "cpu_limit" {
