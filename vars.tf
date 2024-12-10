@@ -58,7 +58,13 @@ variable "env_vars" {
 variable "max_scale" {
   description = "max scale of instances"
   type        = number
-  default     = 100
+  default     = 20
+}
+
+variable "min_scale" {
+  description = "min scale of instances"
+  type        = number
+  default     = 0
 }
 
 variable "initial_delay" {

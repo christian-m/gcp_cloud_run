@@ -16,6 +16,7 @@ resource "google_cloud_run_v2_service" "default" {
     }
 
     scaling {
+      min_instance_count = var.min_scale
       max_instance_count = var.max_scale
     }
 
