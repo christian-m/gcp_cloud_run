@@ -7,6 +7,7 @@ resource "google_cloud_run_v2_service" "default" {
 
   labels = {
     env = var.environment
+    app = var.service_name
   }
 
   template {
@@ -91,6 +92,10 @@ resource "google_cloud_run_domain_mapping" "default" {
 
   metadata {
     namespace = var.project
+    labels = {
+      env = var.environment
+      app = var.service_name
+    }
   }
 
   spec {
