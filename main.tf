@@ -11,11 +11,6 @@ resource "google_cloud_run_v2_service" "default" {
   }
 
   template {
-    annotations = {
-      "serving.knative.dev/creator"      = var.gcr_creator
-      "serving.knative.dev/lastModifier" = var.gcr_modifier
-    }
-
     scaling {
       min_instance_count = var.min_scale
       max_instance_count = var.max_scale

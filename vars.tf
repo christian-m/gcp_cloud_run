@@ -84,14 +84,3 @@ variable "mem_limit" {
   type        = string
   default     = "256M"
 }
-
-variable "gcr_creator" {
-  description = "creator of the Cloud Run service"
-  type        = string
-}
-
-variable "gcr_modifier" {
-  description = "modifier of the Cloud Run service"
-  type        = string
-}
-
