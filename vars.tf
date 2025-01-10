@@ -19,6 +19,12 @@ variable "service_name" {
   type        = string
 }
 
+variable "service_revision" {
+  description = "revision url of the container image"
+  type        = string
+  default     = "v1"
+}
+
 variable "domain_name" {
   description = "domain name where the Cloud Run service is accessible"
   type        = string
@@ -44,6 +50,12 @@ variable "container_ready_path" {
   description = "ready path of the container image"
   type        = string
   default     = "/ready"
+}
+
+variable "container_ready_port" {
+  description = "ready port of the container image"
+  type        = number
+  default     = 8080
 }
 
 variable "env_vars" {
@@ -83,4 +95,15 @@ variable "mem_limit" {
   description = "memory limit of the container"
   type        = string
   default     = "256M"
+}
+
+variable "deletion_protection" {
+  description = "should the instance can be deleted"
+  type        = bool
+  default     = false
+}
+
+locals {
+  service_name     = "${var.environment}-${var.service_name}"
+  service_revision = "${local.service_name}-${var.service_revision}"
 }

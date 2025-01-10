@@ -1,6 +1,6 @@
 resource "google_cloud_run_v2_service" "default" {
-  deletion_protection = false
-  name                = var.service_name
+  deletion_protection = var.deletion_protection
+  name                = local.service_name
   location            = var.region
 
   ingress = "INGRESS_TRAFFIC_ALL"
@@ -11,6 +11,8 @@ resource "google_cloud_run_v2_service" "default" {
   }
 
   template {
+    revision = local.service_revision
+
     scaling {
       min_instance_count = var.min_scale
       max_instance_count = var.max_scale
@@ -38,7 +40,7 @@ resource "google_cloud_run_v2_service" "default" {
         timeout_seconds       = 1
         http_get {
           path = var.container_ready_path
-          port = var.container_port
+          port = var.container_ready_port
         }
       }
       resources {
