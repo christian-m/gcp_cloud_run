@@ -18,6 +18,16 @@ resource "google_cloud_run_v2_service" "default" {
       max_instance_count = var.max_scale
     }
 
+    dynamic "vpc_access" {
+      for_each = var.compute_network != null ? [var.compute_network] : []
+      content {
+        network_interfaces {
+          network    = var.compute_network.network_name
+          subnetwork = var.compute_network.subnetwork_name
+        }
+      }
+    }
+
     containers {
       image = var.container_image
 

@@ -97,6 +97,16 @@ variable "mem_limit" {
   default     = "256M"
 }
 
+variable "compute_network" {
+  description = "name of the compute network"
+  type = object({
+    network_name    = string,
+    subnetwork_name = string,
+  })
+  nullable  = true
+  default = null
+}
+
 variable "deletion_protection" {
   description = "should the instance can be deleted"
   type        = bool
