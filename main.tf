@@ -34,8 +34,8 @@ resource "google_cloud_run_v2_service" "default" {
       dynamic "env" {
         for_each = var.env_vars
         content {
-          name  = env.value.name
-          value = env.value.value
+          name  = env.key
+          value = env.value
         }
       }
 

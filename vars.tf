@@ -20,7 +20,7 @@ variable "service_name" {
 }
 
 variable "service_revision" {
-  description = "revision url of the container image"
+  description = "revision of the container image"
   type        = string
   default     = "v1"
 }
@@ -60,11 +60,8 @@ variable "container_ready_port" {
 
 variable "env_vars" {
   description = "environment variables to pass to the container"
-  type = set(object({
-    name  = string,
-    value = string,
-  }))
-  default = []
+  type = map(string)
+  default = {}
 }
 
 variable "max_scale" {
@@ -103,8 +100,8 @@ variable "compute_network" {
     network_name    = string,
     subnetwork_name = string,
   })
-  nullable  = true
-  default = null
+  nullable = true
+  default  = null
 }
 
 variable "deletion_protection" {
