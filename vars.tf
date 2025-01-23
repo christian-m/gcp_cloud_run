@@ -35,6 +35,16 @@ variable "domain_zone_name" {
   type        = string
 }
 
+variable "artifact_registry_location" {
+  description = "location of the artifact registry"
+  type        = string
+}
+
+variable "artifact_registry_name" {
+  description = "name of the artifact registry"
+  type        = string
+}
+
 variable "container_image" {
   description = "registry url of the container image"
   type        = string

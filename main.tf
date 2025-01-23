@@ -1,3 +1,16 @@
+resource "google_service_account" "default" {
+  account_id   = "compute-${local.service_name}"
+  display_name = "Service account for Cloud Run service ${local.service_name}"
+}
+
+resource "google_artifact_registry_repository_iam_member" "default" {
+  role       = "roles/artifactregistry.reader"
+  member     = "serviceAccount:${google_service_account.default.email}"
+  project    = var.project
+  location   = var.artifact_registry_location
+  repository = var.artifact_registry_name
+}
+
 resource "google_cloud_run_v2_service" "default" {
   deletion_protection = var.deletion_protection
   name                = local.service_name
@@ -61,6 +74,7 @@ resource "google_cloud_run_v2_service" "default" {
         cpu_idle = true
       }
     }
+    service_account = google_service_account.default.email
   }
 }
 
