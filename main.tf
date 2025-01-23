@@ -3,6 +3,13 @@ resource "google_service_account" "default" {
   display_name = "Service account for Cloud Run service ${local.service_name}"
 }
 
+resource "google_secret_manager_secret_iam_member" "default" {
+  for_each  = var.secret_env_vars
+  secret_id = each.value
+  role      = "roles/secretmanager.secretAccessor"
+  member    = "serviceAccount:${google_service_account.default.email}"
+}
+
 resource "google_artifact_registry_repository_iam_member" "default" {
   role       = "roles/artifactregistry.reader"
   member     = "serviceAccount:${google_service_account.default.email}"
@@ -49,6 +56,18 @@ resource "google_cloud_run_v2_service" "default" {
         content {
           name  = env.key
           value = env.value
+        }
+      }
+      dynamic "env" {
+        for_each = var.secret_env_vars
+        content {
+          name = env.key
+          value_source {
+            secret_key_ref {
+              secret  = env.value
+              version = "latest"
+            }
+          }
         }
       }
 

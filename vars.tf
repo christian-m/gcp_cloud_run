@@ -74,6 +74,12 @@ variable "env_vars" {
   default = {}
 }
 
+variable "secret_env_vars" {
+  description = "environment variables stored in the secrets manager to pass to the container (use secret manager secret ids)"
+  type = map(string)
+  default = {}
+}
+
 variable "max_scale" {
   description = "max scale of instances"
   type        = number
