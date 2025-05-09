@@ -115,7 +115,7 @@ resource "google_cloud_run_v2_service_iam_policy" "no_auth" {
 }
 
 module "dns_record" {
-  source      = "git::git@github.com:christian-m/gcp_cloud_dns_resource_record.git?ref=v1.1"
+  source      = "git::git@gitlab.com:cma-lab/tf-modules/gcp/gcp_cloud_dns_resource_record.git?ref=v1.1"
   environment = var.environment
   zone_name   = var.domain_zone_name
   record = {
